@@ -1,4 +1,6 @@
-<package format="2">
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>hardware_interface</name>
   <version>0.15.1</version>
   <description>Hardware Interface base class.</description>
@@ -15,8 +17,12 @@
   <author>Wim Meeussen</author>
   <author>Adolfo Rodriguez Tsouroukdissian</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
-  <test_depend>rostest</test_depend>
-  <test_depend>rosunit</test_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

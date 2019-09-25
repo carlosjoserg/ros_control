@@ -104,12 +104,14 @@ TEST_F(RobotHWTest, InterfaceRewriting)
   hw.registerInterface(&state1_iface);
 
   JointStateInterface* state_iface_ptr = hw.get<JointStateInterface>();
-  EXPECT_EQ(1, state_iface_ptr->getNames().size());
+  u_int one = 1;
+  EXPECT_EQ(one, state_iface_ptr->getNames().size());
 
   // Register second interface and verify that it has taken the place of the previously inserted one
   hw.registerInterface(&state2_iface);
   state_iface_ptr = hw.get<JointStateInterface>();
-  EXPECT_EQ(2, state_iface_ptr->getNames().size());
+  u_int two = 2;
+  EXPECT_EQ(two, state_iface_ptr->getNames().size());
 }
 
 TEST_F(RobotHWTest, ConflictChecking)
@@ -359,4 +361,3 @@ int main(int argc, char** argv)
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

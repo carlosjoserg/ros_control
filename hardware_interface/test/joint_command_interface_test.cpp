@@ -29,7 +29,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <ros/console.h>
+// #include <rclcpp/logging.hpp>
 #include <hardware_interface/joint_command_interface.h>
 
 using std::string;
@@ -46,7 +46,7 @@ TEST(JointCommandHandleTest, HandleConstruction)
   // Print error messages
   // Requires manual output inspection, but exception message should be descriptive
   try {JointHandle tmp(JointStateHandle(name, &pos, &vel, &eff), 0);}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;}
 }
 
 #ifndef NDEBUG // NOTE: This test validates assertion triggering, hence only gets compiled in debug mode
@@ -117,12 +117,13 @@ TEST_F(JointCommandInterfaceTest, ExcerciseApi)
   EXPECT_DOUBLE_EQ(new_cmd_2, hc2_tmp.getCommand());
 
   // This interface claims resources
-  EXPECT_EQ(2, iface.getClaims().size());
+  u_int two = 2;
+  EXPECT_EQ(two, iface.getClaims().size());
 
   // Print error message
   // Requires manual output inspection, but exception message should contain the interface name (not its base class)
   try {iface.getHandle("unknown_name");}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;}
 }
 
 int main(int argc, char** argv)
@@ -130,4 +131,3 @@ int main(int argc, char** argv)
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

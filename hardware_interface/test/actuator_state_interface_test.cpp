@@ -29,7 +29,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <ros/console.h>
+#include <rclcpp/logging.hpp>
 #include <hardware_interface/actuator_state_interface.h>
 
 using std::string;
@@ -47,13 +47,13 @@ TEST(ActuatorStateHandleTest, HandleConstruction)
   // Print error messages
   // Requires manual output inspection, but exception message should be descriptive
   try {ActuatorStateHandle(name, 0, &vel, &eff);}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;} // LOG ERROR
 
   try {ActuatorStateHandle(name, &pos, 0, &eff);}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;} // LOG ERROR
 
   try {ActuatorStateHandle(name, &pos, &vel, 0);}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;} // LOG ERROR
 }
 
 #ifndef NDEBUG // NOTE: This test validates assertion triggering, hence only gets compiled in debug mode
@@ -122,7 +122,7 @@ TEST_F(ActuatorStateInterfaceTest, ExcerciseApi)
   // Print error message
   // Requires manual output inspection, but exception message should contain the interface name (not its base class)
   try {iface.getHandle("unknown_name");}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;} // LOG ERROR
 }
 
 int main(int argc, char** argv)
@@ -130,4 +130,3 @@ int main(int argc, char** argv)
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

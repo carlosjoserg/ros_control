@@ -36,8 +36,8 @@
 #include <hardware_interface/internal/interface_manager.h>
 #include <hardware_interface/hardware_interface.h>
 #include <hardware_interface/controller_info.h>
-#include <ros/console.h>
-#include <ros/node_handle.h>
+// #include <rclcpp/logging.hpp>
+#include <rclcpp/node.hpp>
 
 namespace hardware_interface
 {
@@ -78,7 +78,7 @@ public:
    *
    * \returns True if initialization was successful
    */
-  virtual bool init(ros::NodeHandle& root_nh, ros::NodeHandle &robot_hw_nh) {return true;}
+  virtual bool init(rclcpp::Node& root_nh, rclcpp::Node &robot_hw_nh) {return true;}
 
   /** \name Resource Management
    *\{*/
@@ -123,7 +123,8 @@ public:
         std::string controller_list;
         for (CtrlInfoIt controller_it = it->second.begin(); controller_it != it->second.end(); ++controller_it)
           controller_list += controller_it->name + ", ";
-        ROS_WARN("Resource conflict on [%s].  Controllers = [%s]", it->first.c_str(), controller_list.c_str());
+        std::cout << "Resource conflict on [" << it->first.c_str() << "].  Controllers = [" << controller_list.c_str() << "]" << std::endl;
+        // RCLCPP_WARN("Resource conflict on [%s].  Controllers = [%s]", it->first.c_str(), controller_list.c_str());
         in_conflict = true;
       }
     }
@@ -154,7 +155,7 @@ public:
    * \param time The current time
    * \param period The time passed since the last call to \ref read
    */
-  virtual void read(const ros::Time& time, const ros::Duration& period) {}
+  virtual void read(const rclcpp::Clock& time, const rclcpp::Duration& period) {}
 
   /**
    * Writes data to the robot HW
@@ -162,7 +163,7 @@ public:
    * \param time The current time
    * \param period The time passed since the last call to \ref write
    */
-  virtual void write(const ros::Time& time, const ros::Duration& period) {}
+  virtual void write(const rclcpp::Clock& time, const rclcpp::Duration& period) {}
 };
 
 typedef std::shared_ptr<RobotHW> RobotHWSharedPtr;
@@ -170,4 +171,3 @@ typedef std::shared_ptr<RobotHW> RobotHWSharedPtr;
 }
 
 #endif
-

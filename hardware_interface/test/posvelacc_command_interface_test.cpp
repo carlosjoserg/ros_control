@@ -29,7 +29,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <ros/console.h>
+// #include <rclcpp/logging.hpp>
 #include <hardware_interface/posvelacc_command_interface.h>
 
 using std::string;
@@ -48,7 +48,7 @@ TEST(PosVelAccCommandHandleTest, HandleConstruction)
   // Print error messages
   // Requires manual output inspection, but exception message should be descriptive
   try {PosVelAccJointHandle tmp(JointStateHandle(name, &pos, &vel, &eff), 0, 0, 0);}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;} // LOG ERROR
 }
 
 #ifndef NDEBUG // NOTE: This test validates assertion triggering, hence only gets compiled in debug mode
@@ -134,12 +134,13 @@ TEST_F(PosVelAccCommandInterfaceTest, ExcerciseApi)
   EXPECT_DOUBLE_EQ(new_cmd_acc2, hc2_tmp.getCommandAcceleration());
 
   // This interface claims resources
-  EXPECT_EQ(2, iface.getClaims().size());
+  u_int two = 2;
+  EXPECT_EQ(two, iface.getClaims().size());
 
   // Print error message
   // Requires manual output inspection, but exception message should contain the interface name (not its base clase)
   try {iface.getHandle("unknown_name");}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;} // LOG ERROR?
 }
 
 int main(int argc, char** argv)
@@ -147,4 +148,3 @@ int main(int argc, char** argv)
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

@@ -29,7 +29,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <ros/console.h>
+// #include <rclcpp/logging.hpp>
 #include <hardware_interface/actuator_command_interface.h>
 
 using std::string;
@@ -46,7 +46,7 @@ TEST(ActuatorCommandHandleTest, HandleConstruction)
   // Print error messages
   // Requires manual output inspection, but exception message should be descriptive
   try {ActuatorHandle(ActuatorStateHandle(name, &pos, &vel, &eff), 0);}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;} // LOG ERROR
 }
 
 #ifndef NDEBUG // NOTE: This test validates assertion triggering, hence only gets compiled in debug mode
@@ -127,7 +127,7 @@ TEST_F(ActuatorCommandInterfaceTest, ExcerciseApi)
   // Print error message
   // Requires manual output inspection, but exception message should contain the interface name (not its base class)
   try {iface.getHandle("unknown_name");}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;} // LOG ERROR
 }
 
 int main(int argc, char** argv)
@@ -135,4 +135,3 @@ int main(int argc, char** argv)
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

@@ -31,7 +31,7 @@
 #include <iostream>
 #include <string>
 #include <gtest/gtest.h>
-#include <ros/console.h>
+// #include <rclcpp/logging.hpp>
 #include <hardware_interface/force_torque_sensor_interface.h>
 
 using std::string;
@@ -130,7 +130,7 @@ TEST_F(ForceTorqueSensorInterfaceTest, ExcerciseApi)
   // Print error message
   // Requires manual output inspection, but exception message should contain the interface name (not its base class)
   try {iface.getHandle("unknown_name");}
-  catch(const HardwareInterfaceException& e) {ROS_ERROR_STREAM(e.what());}
+  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;}
 }
 
 int main(int argc, char** argv)

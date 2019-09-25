@@ -37,7 +37,7 @@
 #include <vector>
 #include <utility>  // for std::make_pair
 
-#include <ros/console.h>
+// #include <rclcpp/logging.hpp>
 
 #include <hardware_interface/internal/demangle_symbol.h>
 
@@ -101,8 +101,11 @@ public:
     }
     else
     {
-      ROS_WARN_STREAM("Replacing previously registered handle '" << handle.getName() << "' in '" +
+        std::cout << "Replacing previously registered handle '" << handle.getName() << "' in '" +
+	                      internal::demangledTypeName(*this) + "'." << std::endl;
+/*      RCLCPP_WARN_STREAM("Replacing previously registered handle '" << handle.getName() << "' in '" +
                       internal::demangledTypeName(*this) + "'.");
+*/
       it->second = handle;
     }
   }

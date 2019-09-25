@@ -172,7 +172,8 @@ TEST_F(HardwareResourceManagerTest, ResourceClaims)
     mgr.getHandle(h2.getName()); // Getting twice the same resource, claims list should still be of size 2
 
     set<string> claims = mgr.getClaims();
-    EXPECT_EQ(2, claims.size());
+    u_int two = 2;
+    EXPECT_EQ(two, claims.size());
     EXPECT_TRUE(find(claims.begin(), claims.end(), h1.getName()) != claims.end());
     EXPECT_TRUE(find(claims.begin(), claims.end(), h2.getName()) != claims.end());
   }

@@ -36,7 +36,7 @@
 #include <vector>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-#include <ros/console.h>
+// #include <rclcpp/logging.hpp>
 
 #include <hardware_interface/internal/demangle_symbol.h>
 #include <hardware_interface/internal/resource_manager.h>
@@ -98,9 +98,13 @@ struct CheckIsResourceManager {
   template <typename C>
   static T* newCI(boost::ptr_vector<ResourceManagerBase> &guards, ...) {
     // it is not a ResourceManager
-    ROS_ERROR("You cannot register multiple interfaces of the same type which are "
+        std::cout << "You cannot register multiple interfaces of the same type which are "
+	              "not of type ResourceManager. There is no established protocol "
+	              "for combining them." << std::endl;
+/*      RCLCPP_ERROR("You cannot register multiple interfaces of the same type which are "
               "not of type ResourceManager. There is no established protocol "
               "for combining them.");
+*/
     return NULL;
   }
 
@@ -131,7 +135,8 @@ public:
     const std::string iface_name = internal::demangledTypeName<T>();
     if (interfaces_.find(iface_name) != interfaces_.end())
     {
-      ROS_WARN_STREAM("Replacing previously registered interface '" << iface_name << "'.");
+      std::cout << "Replacing previously registered interface '" << iface_name << "'." << std::endl;
+      // RCLCPP_WARN_STREAM("Replacing previously registered interface '" << iface_name << "'.");
     }
     interfaces_[iface_name] = iface;
     internal::CheckIsResourceManager<T>::callGetResources(resources_[iface_name], iface);
@@ -163,8 +168,11 @@ public:
     if (it != interfaces_.end()) {
       T* iface = static_cast<T*>(it->second);
       if (!iface) {
-        ROS_ERROR_STREAM("Failed reconstructing type T = '" << type_name.c_str() <<
+        std::cout << "Failed reconstructing type T = '" << type_name.c_str() <<
+                         "'. This should never happen" << std::endl;
+/*        RCLCPP_ERROR_STREAM("Failed reconstructing type T = '" << type_name.c_str() <<
                          "'. This should never happen");
+*/
         return NULL;
       }
       iface_list.push_back(iface);
@@ -205,9 +213,13 @@ public:
         num_ifaces_registered_[type_name] = iface_list.size();
       } else {
         // it is not a ResourceManager
-        ROS_ERROR("You cannot register multiple interfaces of the same type which are "
+        std::cout << "You cannot register multiple interfaces of the same type which are "
+                  "not of type ResourceManager. There is no established protocol "
+                  "for combining them." << std::endl;
+/*        RCLCPP_ERROR("You cannot register multiple interfaces of the same type which are "
                   "not of type ResourceManager. There is no established protocol "
                   "for combining them.");
+*/
         iface_combo = NULL;
       }
     }
