@@ -29,7 +29,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-// #include <rclcpp/logging.hpp>
+#include <rcutils/logging_macros.h>
 #include <hardware_interface/posvel_command_interface.h>
 
 using std::string;
@@ -47,7 +47,7 @@ TEST(PosVelCommandHandleTest, HandleConstruction)
   // Print error messages
   // Requires manual output inspection, but exception message should be descriptive
   try {PosVelJointHandle tmp(JointStateHandle(name, &pos, &vel, &eff), 0, 0);}
-  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;}
+  catch(const HardwareInterfaceException& e) {RCUTILS_LOG_ERROR(e.what());}
 }
 
 #ifndef NDEBUG // NOTE: This test validates assertion triggering, hence only gets compiled in debug mode
@@ -134,7 +134,7 @@ TEST_F(PosVelCommandInterfaceTest, ExcerciseApi)
   // Print error message
   // Requires manual output inspection, but exception message should contain the interface name (not its base clase)
   try {iface.getHandle("unknown_name");}
-  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;}
+  catch(const HardwareInterfaceException& e) {RCUTILS_LOG_ERROR(e.what());}
 }
 
 int main(int argc, char** argv)

@@ -31,7 +31,7 @@
 #include <ctime>
 #include <string>
 #include <gtest/gtest.h>
-// #include <rclcpp/logging.hpp>
+#include <rcutils/logging_macros.h>
 #include <hardware_interface/imu_sensor_interface.h>
 
 using std::string;

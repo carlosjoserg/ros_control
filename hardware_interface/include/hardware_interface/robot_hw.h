@@ -36,7 +36,7 @@
 #include <hardware_interface/internal/interface_manager.h>
 #include <hardware_interface/hardware_interface.h>
 #include <hardware_interface/controller_info.h>
-// #include <rclcpp/logging.hpp>
+#include <rcutils/logging_macros.h>
 #include <rclcpp/node.hpp>
 
 namespace hardware_interface
@@ -123,8 +123,12 @@ public:
         std::string controller_list;
         for (CtrlInfoIt controller_it = it->second.begin(); controller_it != it->second.end(); ++controller_it)
           controller_list += controller_it->name + ", ";
-        std::cout << "Resource conflict on [" << it->first.c_str() << "].  Controllers = [" << controller_list.c_str() << "]" << std::endl;
-        // RCLCPP_WARN("Resource conflict on [%s].  Controllers = [%s]", it->first.c_str(), controller_list.c_str());
+        std::string message = "Resource conflict on [";
+        message += it->first.c_str();
+        message += "].  Controllers = [";
+        message += controller_list.c_str();
+        message += "]";
+        RCUTILS_LOG_WARN(message.c_str());
         in_conflict = true;
       }
     }

@@ -37,7 +37,7 @@
 #include <vector>
 #include <utility>  // for std::make_pair
 
-// #include <rclcpp/logging.hpp>
+#include <rcutils/logging_macros.h>
 
 #include <hardware_interface/internal/demangle_symbol.h>
 
@@ -101,11 +101,10 @@ public:
     }
     else
     {
-        std::cout << "Replacing previously registered handle '" << handle.getName() << "' in '" +
-	                      internal::demangledTypeName(*this) + "'." << std::endl;
-/*      RCLCPP_WARN_STREAM("Replacing previously registered handle '" << handle.getName() << "' in '" +
-                      internal::demangledTypeName(*this) + "'.");
-*/
+        std::string message = "Replacing previously registered handle '" + handle.getName() + "' in '" +
+                      internal::demangledTypeName(*this) + "'.";
+        RCUTILS_LOG_WARN(message.c_str());
+
       it->second = handle;
     }
   }

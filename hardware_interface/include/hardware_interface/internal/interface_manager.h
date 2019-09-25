@@ -36,7 +36,7 @@
 #include <vector>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-// #include <rclcpp/logging.hpp>
+#include <rcutils/logging_macros.h>
 
 #include <hardware_interface/internal/demangle_symbol.h>
 #include <hardware_interface/internal/resource_manager.h>
@@ -98,13 +98,9 @@ struct CheckIsResourceManager {
   template <typename C>
   static T* newCI(boost::ptr_vector<ResourceManagerBase> &guards, ...) {
     // it is not a ResourceManager
-        std::cout << "You cannot register multiple interfaces of the same type which are "
-	              "not of type ResourceManager. There is no established protocol "
-	              "for combining them." << std::endl;
-/*      RCLCPP_ERROR("You cannot register multiple interfaces of the same type which are "
+        RCUTILS_LOG_ERROR("You cannot register multiple interfaces of the same type which are "
               "not of type ResourceManager. There is no established protocol "
               "for combining them.");
-*/
     return NULL;
   }
 

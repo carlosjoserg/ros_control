@@ -29,7 +29,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <rclcpp/logging.hpp>
+#include <rcutils/logging_macros.h>
 #include <hardware_interface/joint_state_interface.h>
 
 using std::string;
@@ -47,13 +47,13 @@ TEST(JointStateHandleTest, HandleConstruction)
   // Print error messages
   // Requires manual output inspection, but exception message should be descriptive
   try {JointStateHandle(name, 0, &vel, &eff);}
-  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;}
+  catch(const HardwareInterfaceException& e) {RCUTILS_LOG_ERROR(e.what());}
 
   try {JointStateHandle(name, &pos, 0, &eff);}
-  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;}
+  catch(const HardwareInterfaceException& e) {RCUTILS_LOG_ERROR(e.what());}
 
   try {JointStateHandle(name, &pos, &vel, 0);}
-  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;}
+  catch(const HardwareInterfaceException& e) {RCUTILS_LOG_ERROR(e.what());}
 
 }
 
@@ -117,7 +117,7 @@ TEST_F(JointStateInterfaceTest, ExcerciseApi)
   // Print error message
   // Requires manual output inspection, but exception message should contain the interface name (not its base class)
   try {iface.getHandle("unknown_name");}
-  catch(const HardwareInterfaceException& e) {std::cout << e.what() << std::endl;}
+  catch(const HardwareInterfaceException& e) {RCUTILS_LOG_ERROR(e.what());}
 }
 
 int main(int argc, char** argv)
