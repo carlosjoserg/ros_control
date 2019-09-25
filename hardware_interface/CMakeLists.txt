@@ -65,4 +65,8 @@ if(BUILD_TESTING)
 
 endif()
 
+install(
+  DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME})
+
 ament_package()
