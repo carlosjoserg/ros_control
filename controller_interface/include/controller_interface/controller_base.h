@@ -33,7 +33,6 @@
 #ifndef CONTROLLER_INTERFACE_CONTROLLER_BASE_H
 #define CONTROLLER_INTERFACE_CONTROLLER_BASE_H
 
-#include <ros/node_handle.h>
 #include <hardware_interface/robot_hw.h>
 #include <memory>
 
@@ -60,21 +59,21 @@ public:
    *
    * \param time The current time
    */
-  virtual void starting(const ros::Time& /*time*/) {};
+  virtual void starting(const rclcpp::Clock& /*time*/) {};
 
   /** \brief This is called periodically by the realtime thread when the controller is running
    *
    * \param time The current time
    * \param period The time passed since the last call to \ref update
    */
-  virtual void update(const ros::Time& time, const ros::Duration& period) = 0;
+  virtual void update(const rclcpp::Clock& time, const rclcpp::Duration& period) = 0;
 
   /** \brief This is called from within the realtime thread just after the last
    * update call before the controller is stopped
    *
    * \param time The current time
    */
-  virtual void stopping(const ros::Time& /*time*/) {};
+  virtual void stopping(const rclcpp::Clock& /*time*/) {};
 
   /** \brief Check if the controller is running
    * \returns true if the controller is running
@@ -85,14 +84,14 @@ public:
   }
 
   /// Calls \ref update only if this controller is running.
-  void updateRequest(const ros::Time& time, const ros::Duration& period)
+  void updateRequest(const rclcpp::Clock& time, const rclcpp::Duration& period)
   {
     if (state_ == RUNNING)
       update(time, period);
   }
 
   /// Calls \ref starting only if this controller is initialized or already running
-  bool startRequest(const ros::Time& time)
+  bool startRequest(const rclcpp::Clock& time)
   {
     // start succeeds even if the controller was already started
     if (state_ == RUNNING || state_ == INITIALIZED){
@@ -105,7 +104,7 @@ public:
   }
 
   /// Calls \ref stopping only if this controller is initialized or already running
-  bool stopRequest(const ros::Time& time)
+  bool stopRequest(const rclcpp::Clock& time)
   {
     // stop succeeds even if the controller was already stopped
     if (state_ == RUNNING || state_ == INITIALIZED){

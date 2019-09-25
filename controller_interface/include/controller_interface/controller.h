@@ -36,8 +36,6 @@
 #include <hardware_interface/internal/demangle_symbol.h>
 #include <hardware_interface/robot_hw.h>
 #include <hardware_interface/hardware_interface.h>
-#include <ros/ros.h>
-
 
 namespace controller_interface
 {
@@ -68,7 +66,7 @@ public:
    * \returns True if initialization was successful and the controller
    * is ready to be started.
    */
-  virtual bool init(T* /*hw*/, ros::NodeHandle& /*controller_nh*/) {return true;};
+  virtual bool init(T* /*hw*/, rclcpp::Node& /*controller_nh*/) {return true;};
 
   /** \brief The init function is called to initialize the controller from a
    * non-realtime thread with a pointer to the hardware interface, itself,
@@ -85,7 +83,7 @@ public:
    * \returns True if initialization was successful and the controller
    * is ready to be started.
    */
-  virtual bool init(T* /*hw*/, ros::NodeHandle& /*root_nh*/, ros::NodeHandle& /*controller_nh*/) {return true;};
+  virtual bool init(T* /*hw*/, rclcpp::Node& /*root_nh*/, rclcpp::Node& /*controller_nh*/) {return true;};
 
 
 protected:
@@ -96,13 +94,13 @@ protected:
    *
    */
   virtual bool initRequest(hardware_interface::RobotHW* robot_hw,
-                           ros::NodeHandle&             root_nh,
-                           ros::NodeHandle&             controller_nh,
+                           rclcpp::Node&             root_nh,
+                           rclcpp::Node&             controller_nh,
                            ClaimedResources&            claimed_resources)
   {
     // check if construction finished cleanly
     if (state_ != CONSTRUCTED){
-      ROS_ERROR("Cannot initialize this controller because it failed to be constructed");
+      RCUTILS_LOG_ERROR("Cannot initialize this controller because it failed to be constructed");
       return false;
     }
 
@@ -110,7 +108,7 @@ protected:
     T* hw = robot_hw->get<T>();
     if (!hw)
     {
-      ROS_ERROR("This controller requires a hardware interface of type '%s'."
+      RCUTILS_LOG_ERROR("This controller requires a hardware interface of type '%s'."
                 " Make sure this is registered in the hardware_interface::RobotHW class.",
                 getHardwareInterfaceType().c_str());
       return false;
@@ -120,7 +118,7 @@ protected:
     hw->clearClaims();
     if (!init(hw, controller_nh) || !init(hw, root_nh, controller_nh))
     {
-      ROS_ERROR("Failed to initialize the controller");
+      RCUTILS_LOG_ERROR("Failed to initialize the controller");
       return false;
     }
     hardware_interface::InterfaceResources iface_res(getHardwareInterfaceType(), hw->getClaims());
