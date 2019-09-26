@@ -73,7 +73,7 @@ public:
    * operate.
    */
   ControllerManager(hardware_interface::RobotHW *robot_hw,
-                   const rclcpp::Node& nh=rclcpp::Node(""));
+                   const rclcpp::Node::SharedPtr& nh=rclcpp::Node::make_shared("hwiface"));
   virtual ~ControllerManager();
 
   /** \name Real-Time Safe Functions
@@ -88,7 +88,7 @@ public:
    * \param reset_controllers If \c true, stop and start all running
    * controllers before updating
    */
-  void update(const rclcpp::Clock& time, const rclcpp::Duration& period, bool reset_controllers=false);
+  void update(const rclcpp::Time& time, const rclcpp::Duration& period, bool reset_controllers=false);
   /*\}*/
 
   /** \name Non Real-Time Safe Functions
@@ -168,7 +168,8 @@ private:
 
   hardware_interface::RobotHW* robot_hw_;
 
-  rclcpp::Node root_nh_, cm_node_;
+  rclcpp::Node::SharedPtr root_node_;
+  rclcpp::Node::SharedPtr cm_node_;
 
   std::list<ControllerLoaderInterfaceSharedPtr> controller_loaders_;
 

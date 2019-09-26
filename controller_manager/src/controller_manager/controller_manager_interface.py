@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 from __future__ import print_function
-import rospy
+import rclpy
 from controller_manager_msgs.srv import *
 
 
 def list_controller_types():
-    rospy.wait_for_service('controller_manager/list_controller_types')
+    rclpy.wait_for_service('controller_manager/list_controller_types')
     s = rospy.ServiceProxy('controller_manager/list_controller_types', ListControllerTypes)
     resp = s.call(ListControllerTypesRequest())
     for t in resp.types:
@@ -13,8 +13,8 @@ def list_controller_types():
 
 
 def reload_libraries(force_kill, restore = False):
-    rospy.wait_for_service('controller_manager/reload_controller_libraries')
-    s = rospy.ServiceProxy('controller_manager/reload_controller_libraries', ReloadControllerLibraries)
+    rclpy.wait_for_service('controller_manager/reload_controller_libraries')
+    s = rclpy.ServiceProxy('controller_manager/reload_controller_libraries', ReloadControllerLibraries)
 
     list_srv = rospy.ServiceProxy('controller_manager/list_controllers', ListControllers)
     load_srv = rospy.ServiceProxy('controller_manager/load_controller', LoadController)
@@ -44,8 +44,8 @@ def reload_libraries(force_kill, restore = False):
 
 
 def list_controllers():
-    rospy.wait_for_service('controller_manager/list_controllers')
-    s = rospy.ServiceProxy('controller_manager/list_controllers', ListControllers)
+    rclpy.wait_for_service('controller_manager/list_controllers')
+    s = rclpy.ServiceProxy('controller_manager/list_controllers', ListControllers)
     resp = s.call(ListControllersRequest())
     if len(resp.controller) == 0:
         print("No controllers are loaded in mechanism control")
@@ -56,7 +56,7 @@ def list_controllers():
 
 
 def load_controller(name):
-    rospy.wait_for_service('controller_manager/load_controller')
+    rclpy.wait_for_service('controller_manager/load_controller')
     s = rospy.ServiceProxy('controller_manager/load_controller', LoadController)
     resp = s.call(LoadControllerRequest(name))
     if resp.ok:
@@ -68,7 +68,7 @@ def load_controller(name):
 
 
 def unload_controller(name):
-    rospy.wait_for_service('controller_manager/unload_controller')
+    rclpy.wait_for_service('controller_manager/unload_controller')
     s = rospy.ServiceProxy('controller_manager/unload_controller', UnloadController)
     resp = s.call(UnloadControllerRequest(name))
     if resp.ok == 1:
@@ -96,8 +96,8 @@ def stop_controllers(names):
 
 
 def start_stop_controllers(start_controllers=[], stop_controllers=[]):
-    rospy.wait_for_service('controller_manager/switch_controller')
-    s = rospy.ServiceProxy('controller_manager/switch_controller', SwitchController)
+    rclpy.wait_for_service('controller_manager/switch_controller')
+    s = rclpy.ServiceProxy('controller_manager/switch_controller', SwitchController)
     strictness = SwitchControllerRequest.STRICT
     resp = s.call(SwitchControllerRequest(start_controllers, stop_controllers, strictness))
     if resp.ok == 1:

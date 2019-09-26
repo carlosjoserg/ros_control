@@ -43,28 +43,30 @@
 namespace controller_manager{
 
 
-ControllerManager::ControllerManager(hardware_interface::RobotHW *robot_hw, const rclcpp::Node& nh) :
+ControllerManager::ControllerManager(hardware_interface::RobotHW *robot_hw, const rclcpp::Node::SharedPtr& nh) :
   robot_hw_(robot_hw),
-  root_nh_(nh.get_name()),
-  cm_node_(nh.get_name(), "controller_manager"),
+  root_node_(nh),
   start_request_(0),
   stop_request_(0),
   please_switch_(false),
   current_controllers_list_(0),
   used_by_realtime_(-1)
 {
+  // creates the controller manager subnode
+  cm_node_ = nh->create_sub_node("controller_manager");
+
   // create controller loader
   controller_loaders_.push_back(
     ControllerLoaderInterfaceSharedPtr(new ControllerLoader<controller_interface::ControllerBase>("controller_interface",
                                                                                                   "controller_interface::ControllerBase") ) );
 
   // Advertise services (this should be the last thing we do in init)
-  srv_list_controllers_ = cm_node_.create_service<controller_manager_msgs::srv::ListControllers>("list_controllers", std::bind(&ControllerManager::listControllersSrv, this, std::placeholders::_1, std::placeholders::_2));
-  srv_list_controller_types_ = cm_node_.create_service<controller_manager_msgs::srv::ListControllerTypes>("list_controller_types", std::bind(&ControllerManager::listControllerTypesSrv, this, std::placeholders::_1, std::placeholders::_2));
-  srv_load_controller_ = cm_node_.create_service<controller_manager_msgs::srv::LoadController>("load_controller", std::bind(&ControllerManager::loadControllerSrv, this, std::placeholders::_1, std::placeholders::_2));
-  srv_unload_controller_ = cm_node_.create_service<controller_manager_msgs::srv::UnloadController>("unload_controller", std::bind(&ControllerManager::unloadControllerSrv, this, std::placeholders::_1, std::placeholders::_2));
-  srv_switch_controller_ = cm_node_.create_service<controller_manager_msgs::srv::SwitchController>("switch_controller", std::bind(&ControllerManager::switchControllerSrv, this, std::placeholders::_1, std::placeholders::_2));
-  srv_reload_libraries_ = cm_node_.create_service<controller_manager_msgs::srv::ReloadControllerLibraries>("reload_controller_libraries", std::bind(&ControllerManager::reloadControllerLibrariesSrv, this, std::placeholders::_1, std::placeholders::_2));
+  srv_list_controllers_ = cm_node_->create_service<controller_manager_msgs::srv::ListControllers>("list_controllers", std::bind(&ControllerManager::listControllersSrv, this, std::placeholders::_1, std::placeholders::_2));
+  srv_list_controller_types_ = cm_node_->create_service<controller_manager_msgs::srv::ListControllerTypes>("list_controller_types", std::bind(&ControllerManager::listControllerTypesSrv, this, std::placeholders::_1, std::placeholders::_2));
+  srv_load_controller_ = cm_node_->create_service<controller_manager_msgs::srv::LoadController>("load_controller", std::bind(&ControllerManager::loadControllerSrv, this, std::placeholders::_1, std::placeholders::_2));
+  srv_unload_controller_ = cm_node_->create_service<controller_manager_msgs::srv::UnloadController>("unload_controller", std::bind(&ControllerManager::unloadControllerSrv, this, std::placeholders::_1, std::placeholders::_2));
+  srv_switch_controller_ = cm_node_->create_service<controller_manager_msgs::srv::SwitchController>("switch_controller", std::bind(&ControllerManager::switchControllerSrv, this, std::placeholders::_1, std::placeholders::_2));
+  srv_reload_libraries_ = cm_node_->create_service<controller_manager_msgs::srv::ReloadControllerLibraries>("reload_controller_libraries", std::bind(&ControllerManager::reloadControllerLibrariesSrv, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 
@@ -75,7 +77,7 @@ ControllerManager::~ControllerManager()
 
 
 // Must be realtime safe.
-void ControllerManager::update(const rclcpp::Clock& time, const rclcpp::Duration& period, bool reset_controllers)
+void ControllerManager::update(const rclcpp::Time& time, const rclcpp::Duration& period, bool reset_controllers)
 {
   used_by_realtime_ = current_controllers_list_;
   std::vector<ControllerSpec> &controllers = controllers_lists_[used_by_realtime_];
@@ -178,22 +180,11 @@ bool ControllerManager::loadController(const std::string& name)
     }
   }
 
-  rclcpp::Node c_nh(root_nh_.get_name(), name);
   // Constructs the controller
-  /*try{
-    c_nh = ;
-  }
-  catch(std::exception &e) {
-    RCUTILS_LOG_ERROR("Exception thrown while constructing nodehandle for controller with name '%s':\n%s", name.c_str(), e.what());
-    return false;
-  }
-  catch(...){
-    RCUTILS_LOG_ERROR("Exception thrown while constructing nodehandle for controller with name '%s'", name.c_str());
-    return false;
-  }*/
+  rclcpp::Node::SharedPtr c_nh = root_node_->create_sub_node(name);
   controller_interface::ControllerBaseSharedPtr c;
   std::string type;
-  if (c_nh.get_parameter("type", type))
+  if (c_nh->get_parameter("type", type))
   {
     RCUTILS_LOG_DEBUG("Constructing controller '%s' of type '%s'", name.c_str(), type.c_str());
     try
@@ -218,7 +209,7 @@ bool ControllerManager::loadController(const std::string& name)
   }
   else
   {
-    RCUTILS_LOG_ERROR("Could not load controller '%s' because the type was not specified. Did you load the controller configuration on the parameter server (namespace: '%s')?", name.c_str(), c_nh.get_namespace());
+    RCUTILS_LOG_ERROR("Could not load controller '%s' because the type was not specified. Did you load the controller configuration on the parameter server (namespace: '%s')?", name.c_str(), c_nh->get_namespace());
     to.clear();
     return false;
   }
@@ -237,7 +228,7 @@ bool ControllerManager::loadController(const std::string& name)
   bool initialized;
   controller_interface::ControllerBase::ClaimedResources claimed_resources; // Gets populated during initRequest call
   try{
-    initialized = c->initRequest(robot_hw_, root_nh_, c_nh, claimed_resources);
+    initialized = c->initRequest(robot_hw_, root_node_, c_nh, claimed_resources);
   }
   catch(std::exception &e){
     RCUTILS_LOG_ERROR("Exception thrown while initializing controller '%s'.\n%s", name.c_str(), e.what());

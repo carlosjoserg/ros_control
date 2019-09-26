@@ -24,8 +24,8 @@
   <depend>controller_manager_msgs</depend>
   <depend>hardware_interface</depend>
   <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
 
-  <exec_depend>rclcpp</exec_depend>
   <exec_depend>rclpy</exec_depend>
 
   <test_depend>rostest</test_depend>

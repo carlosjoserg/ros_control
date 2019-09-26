@@ -20,6 +20,7 @@ find_package(controller_interface REQUIRED)
 find_package(controller_manager_msgs REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
+find_package(rclcpp REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS thread)
 
@@ -31,10 +32,11 @@ include_directories(include
   ${controller_manager_msgs_INCLUDE_DIRS}
   ${hardware_interface_INCLUDE_DIRS}
   ${pluginlib_INCLUDE_DIRS}
+  ${rclcpp_INCLUDE_DIRS}
 
 )
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/controller_manager.cpp
   include/controller_manager/controller_manager.h
   include/controller_manager/controller_loader_interface.h
@@ -42,6 +44,8 @@ add_library(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
+  ${rclcpp_LIBRARIES}
+  ${controller_manager_msgs_LIBRARIES}
   ${pluginlib_LIBRARIES}
   ${Boost_LIBRARIES}
 )
@@ -55,13 +59,15 @@ if(BUILD_TESTING)
   # uncomment the line when this package is not in a git repo
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
-#
-#  find_package(ament_cmake_gtest REQUIRED)
-#  ament_add_gtest(controller_manager_hwi_switch_test
-#    test/hwi_switch_test.test
-#    test/hwi_switch_test.cpp
-#  )
-#  target_link_libraries(controller_manager_hwi_switch_test ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+  find_package(ament_cmake_gtest REQUIRED)
+  include_directories(${ament_cmake_gtest_INCLUDE_DIRS})
+  ament_add_gtest(controller_manager_hwi_switch_test
+    test/hwi_switch_test.test
+    test/hwi_switch_test.cpp
+  )
+  target_link_libraries(controller_manager_hwi_switch_test
+      ${PROJECT_NAME})
 
 endif()
 
@@ -80,12 +86,14 @@ install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib/${PROJECT_NAME}
   LIBRARY DESTINATION lib/${PROJECT_NAME})
 
+
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(ament_cmake_python)
 ament_export_dependencies(controller_interface)
 ament_export_dependencies(controller_manager_msgs)
 ament_export_dependencies(hardware_interface)
 ament_export_dependencies(pluginlib)
+ament_export_dependencies(rclcpp)
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
