@@ -1,19 +1,37 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(controller_manager)
 
-# Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS controller_interface controller_manager_msgs hardware_interface pluginlib)
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif()
+
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+find_package(controller_interface REQUIRED)
+find_package(controller_manager_msgs REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(pluginlib REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS thread)
 
-include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
+message("controller interface headers ${controller_interface_INCLUDE_DIRS}")
 
-# Declare catkin package
-catkin_package(
-  DEPENDS Boost
-  CATKIN_DEPENDS controller_interface controller_manager_msgs hardware_interface pluginlib
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
+include_directories(include
+  ${Boost_INCLUDE_DIR}
+  ${controller_interface_INCLUDE_DIRS}
+  ${controller_manager_msgs_INCLUDE_DIRS}
+  ${hardware_interface_INCLUDE_DIRS}
+  ${pluginlib_INCLUDE_DIRS}
+
 )
 
 add_library(${PROJECT_NAME}
@@ -22,38 +40,54 @@ add_library(${PROJECT_NAME}
   include/controller_manager/controller_loader_interface.h
   include/controller_manager/controller_loader.h
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-if(catkin_EXPORTED_TARGETS)
-  add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}
+  ${pluginlib_LIBRARIES}
+  ${Boost_LIBRARIES}
+)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # uncomment the line when a copyright and license is not present in all source files
+  #set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # uncomment the line when this package is not in a git repo
+  #set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+#
+#  find_package(ament_cmake_gtest REQUIRED)
+#  ament_add_gtest(controller_manager_hwi_switch_test
+#    test/hwi_switch_test.test
+#    test/hwi_switch_test.cpp
+#  )
+#  target_link_libraries(controller_manager_hwi_switch_test ${PROJECT_NAME} ${catkin_LIBRARIES})
+
 endif()
 
-if(CATKIN_ENABLE_TESTING)
+install(
+  DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME})
 
-  find_package(rostest REQUIRED)
-  add_rostest_gtest(controller_manager_hwi_switch_test
-    test/hwi_switch_test.test
-    test/hwi_switch_test.cpp
-  )
-  target_link_libraries(controller_manager_hwi_switch_test ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-endif()
-
-# Install
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
-
-# Install library
-install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
-
-catkin_install_python(PROGRAMS
+install(PROGRAMS
   scripts/controller_group
   scripts/controller_manager
   scripts/spawner
   scripts/unspawner
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+  DESTINATION bin)
 
-catkin_python_setup()
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib/${PROJECT_NAME}
+  LIBRARY DESTINATION lib/${PROJECT_NAME})
+
+ament_export_dependencies(ament_cmake)
+ament_export_dependencies(ament_cmake_python)
+ament_export_dependencies(controller_interface)
+ament_export_dependencies(controller_manager_msgs)
+ament_export_dependencies(hardware_interface)
+ament_export_dependencies(pluginlib)
+
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+
+ament_package()
