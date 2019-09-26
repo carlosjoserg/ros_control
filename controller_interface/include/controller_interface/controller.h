@@ -66,7 +66,7 @@ public:
    * \returns True if initialization was successful and the controller
    * is ready to be started.
    */
-  virtual bool init(T* /*hw*/, rclcpp::Node& /*controller_nh*/) {return true;};
+  virtual bool init(T* /*hw*/, rclcpp::Node::SharedPtr& /*controller_nh*/) {return true;};
 
   /** \brief The init function is called to initialize the controller from a
    * non-realtime thread with a pointer to the hardware interface, itself,
@@ -83,7 +83,7 @@ public:
    * \returns True if initialization was successful and the controller
    * is ready to be started.
    */
-  virtual bool init(T* /*hw*/, rclcpp::Node& /*root_nh*/, rclcpp::Node& /*controller_nh*/) {return true;};
+  virtual bool init(T* /*hw*/, rclcpp::Node::SharedPtr& /*root_nh*/, rclcpp::Node::SharedPtr& /*controller_nh*/) {return true;};
 
 
 protected:
@@ -94,8 +94,8 @@ protected:
    *
    */
   virtual bool initRequest(hardware_interface::RobotHW* robot_hw,
-                           rclcpp::Node&             root_nh,
-                           rclcpp::Node&             controller_nh,
+                           rclcpp::Node::SharedPtr&             root_nh,
+                           rclcpp::Node::SharedPtr&             controller_nh,
                            ClaimedResources&            claimed_resources)
   {
     // check if construction finished cleanly

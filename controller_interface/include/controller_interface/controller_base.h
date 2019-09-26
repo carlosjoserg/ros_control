@@ -59,21 +59,21 @@ public:
    *
    * \param time The current time
    */
-  virtual void starting(const rclcpp::Clock& /*time*/) {};
+  virtual void starting(const rclcpp::Time& /*time*/) {};
 
   /** \brief This is called periodically by the realtime thread when the controller is running
    *
    * \param time The current time
    * \param period The time passed since the last call to \ref update
    */
-  virtual void update(const rclcpp::Clock& time, const rclcpp::Duration& period) = 0;
+  virtual void update(const rclcpp::Time& time, const rclcpp::Duration& period) = 0;
 
   /** \brief This is called from within the realtime thread just after the last
    * update call before the controller is stopped
    *
    * \param time The current time
    */
-  virtual void stopping(const rclcpp::Clock& /*time*/) {};
+  virtual void stopping(const rclcpp::Time& /*time*/) {};
 
   /** \brief Check if the controller is running
    * \returns true if the controller is running
@@ -84,14 +84,14 @@ public:
   }
 
   /// Calls \ref update only if this controller is running.
-  void updateRequest(const rclcpp::Clock& time, const rclcpp::Duration& period)
+  void updateRequest(const rclcpp::Time& time, const rclcpp::Duration& period)
   {
     if (state_ == RUNNING)
       update(time, period);
   }
 
   /// Calls \ref starting only if this controller is initialized or already running
-  bool startRequest(const rclcpp::Clock& time)
+  bool startRequest(const rclcpp::Time& time)
   {
     // start succeeds even if the controller was already started
     if (state_ == RUNNING || state_ == INITIALIZED){
@@ -104,7 +104,7 @@ public:
   }
 
   /// Calls \ref stopping only if this controller is initialized or already running
-  bool stopRequest(const rclcpp::Clock& time)
+  bool stopRequest(const rclcpp::Time& time)
   {
     // stop succeeds even if the controller was already stopped
     if (state_ == RUNNING || state_ == INITIALIZED){
@@ -140,8 +140,8 @@ public:
    * is ready to be started.
    */
   virtual bool initRequest(hardware_interface::RobotHW* robot_hw,
-                           rclcpp::Node&             root_nh,
-                           rclcpp::Node&             controller_nh,
+                           rclcpp::Node::SharedPtr&             root_nh,
+                           rclcpp::Node::SharedPtr&             controller_nh,
                            ClaimedResources&            claimed_resources) = 0;
 
   /*\}*/

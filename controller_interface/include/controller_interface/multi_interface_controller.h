@@ -75,7 +75,7 @@ namespace controller_interface
  * public:
  *   VelEffController() {}
  *
- *   bool init(hardware_interface::RobotHW* robot_hw, rclcpp::Node &n)
+ *   bool init(hardware_interface::RobotHW* robot_hw, rclcpp::Node::SharedPtr &n)
  *   {
  *     // robot_hw pointer only contains the two interfaces requested by the
  *     // controller. It is a subset of the entire robot, which may have more
@@ -114,7 +114,7 @@ namespace controller_interface
  *                                                     EffortJointInterface> (true)
  *   {}
  *
- *   bool init(hardware_interface::RobotHW* robot_hw, rclcpp::Node &n)
+ *   bool init(hardware_interface::RobotHW* robot_hw, rclcpp::Node::SharedPtr &n)
  *   {
  *     // robot_hw pointer contains at most the two interfaces requested by the
  *     // controller. It may have none, only one or both, depending on whether the
@@ -187,7 +187,7 @@ public:
    * is ready to be started.
    */
   virtual bool init(hardware_interface::RobotHW* /*robot_hw*/,
-                    rclcpp::Node&             /*controller_nh*/)
+                    rclcpp::Node::SharedPtr&             /*controller_nh*/)
   {return true;}
 
   /**
@@ -217,8 +217,8 @@ public:
    * is ready to be started.
    */
   virtual bool init(hardware_interface::RobotHW* /*robot_hw*/,
-                    rclcpp::Node&             /*root_nh*/,
-                    rclcpp::Node&             /*controller_nh*/)
+                    rclcpp::Node::SharedPtr&             /*root_nh*/,
+                    rclcpp::Node::SharedPtr&             /*controller_nh*/)
   {return true;}
 
 protected:
@@ -245,8 +245,8 @@ protected:
    * is ready to be started.
    */
   virtual bool initRequest(hardware_interface::RobotHW* robot_hw,
-                           rclcpp::Node&             root_nh,
-                           rclcpp::Node&             controller_nh,
+                           rclcpp::Node::SharedPtr&             root_nh,
+                           rclcpp::Node::SharedPtr&             controller_nh,
                            ClaimedResources&            claimed_resources)
   {
     // check if construction finished cleanly
