@@ -131,8 +131,10 @@ public:
     const std::string iface_name = internal::demangledTypeName<T>();
     if (interfaces_.find(iface_name) != interfaces_.end())
     {
-      std::cout << "Replacing previously registered interface '" << iface_name << "'." << std::endl;
-      // RCLCPP_WARN_STREAM("Replacing previously registered interface '" << iface_name << "'.");
+      std::string message = "Replacing previously registered interface '";
+      message += iface_name;
+      message += "'.";
+      RCUTILS_LOG_WARN(message.c_str());
     }
     interfaces_[iface_name] = iface;
     internal::CheckIsResourceManager<T>::callGetResources(resources_[iface_name], iface);
@@ -164,11 +166,10 @@ public:
     if (it != interfaces_.end()) {
       T* iface = static_cast<T*>(it->second);
       if (!iface) {
-        std::cout << "Failed reconstructing type T = '" << type_name.c_str() <<
-                         "'. This should never happen" << std::endl;
-/*        RCLCPP_ERROR_STREAM("Failed reconstructing type T = '" << type_name.c_str() <<
-                         "'. This should never happen");
-*/
+        std::string message = "Failed reconstructing type T = '";
+        message += type_name.c_str();
+        message += "'. This should never happen";
+        RCUTILS_LOG_ERROR(message.c_str());
         return NULL;
       }
       iface_list.push_back(iface);
@@ -209,13 +210,9 @@ public:
         num_ifaces_registered_[type_name] = iface_list.size();
       } else {
         // it is not a ResourceManager
-        std::cout << "You cannot register multiple interfaces of the same type which are "
-                  "not of type ResourceManager. There is no established protocol "
-                  "for combining them." << std::endl;
-/*        RCLCPP_ERROR("You cannot register multiple interfaces of the same type which are "
+        RCUTILS_LOG_ERROR("You cannot register multiple interfaces of the same type which are "
                   "not of type ResourceManager. There is no established protocol "
                   "for combining them.");
-*/
         iface_combo = NULL;
       }
     }

@@ -69,4 +69,9 @@ install(
   DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME})
 
+ament_export_dependencies(ament_cmake)
+ament_export_dependencies(rclcpp)
+
+ament_export_include_directories(include)
+
 ament_package()
