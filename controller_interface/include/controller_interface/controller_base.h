@@ -140,8 +140,8 @@ public:
    * is ready to be started.
    */
   virtual bool initRequest(hardware_interface::RobotHW* robot_hw,
-                           ros::NodeHandle&             root_nh,
-                           ros::NodeHandle&             controller_nh,
+                           rclcpp::Node&             root_nh,
+                           rclcpp::Node&             controller_nh,
                            ClaimedResources&            claimed_resources) = 0;
 
   /*\}*/
