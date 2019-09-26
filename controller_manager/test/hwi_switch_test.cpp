@@ -306,12 +306,6 @@ public:
     }
 };
 
-void update_callback(controller_manager::ControllerManager & __cm)
-{
-    __cm.update(rclcpp::Clock().now(), rclcpp::Duration(0.01));
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-}
-
 TEST(SwitchInterfacesTest, SwitchInterfaces)
 {
     GuardROS guard;
@@ -323,7 +317,7 @@ TEST(SwitchInterfacesTest, SwitchInterfaces)
 
     cm.registerControllerLoader(std::make_shared<DummyControllerLoader>());
 
-    // auto a2 = std::async(std::launch::deferred, std::bind(update_callback), std::ref(cm), "world!");
+    auto update_timer = nh->create_wall_timer(std::chrono::microseconds(100), [&cm](){cm.update(rclcpp::Clock().now(), rclcpp::Duration(0.01));});
 
     ASSERT_TRUE(cm.loadController("group_pos"));
     ASSERT_TRUE(cm.loadController("another_group_pos"));
