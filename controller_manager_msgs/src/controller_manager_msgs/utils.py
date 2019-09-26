@@ -37,7 +37,7 @@
 ###############################################################################
 
 import rosservice
-from rospy import ServiceProxy
+from rclpy import ServiceProxy
 from controller_manager_msgs.srv import *
 
 # Names of controller manager services, and their respective types
