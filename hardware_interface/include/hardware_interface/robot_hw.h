@@ -78,7 +78,7 @@ public:
    *
    * \returns True if initialization was successful
    */
-  virtual bool init(rclcpp::Node& root_nh, rclcpp::Node &robot_hw_nh) {return true;}
+  virtual bool init(rclcpp::Node::SharedPtr& root_nh, rclcpp::Node::SharedPtr &robot_hw_nh) {return true;}
 
   /** \name Resource Management
    *\{*/
@@ -159,7 +159,7 @@ public:
    * \param time The current time
    * \param period The time passed since the last call to \ref read
    */
-  virtual void read(const rclcpp::Clock& time, const rclcpp::Duration& period) {}
+  virtual void read(const rclcpp::Time& time, const rclcpp::Duration& period) {}
 
   /**
    * Writes data to the robot HW
@@ -167,7 +167,7 @@ public:
    * \param time The current time
    * \param period The time passed since the last call to \ref write
    */
-  virtual void write(const rclcpp::Clock& time, const rclcpp::Duration& period) {}
+  virtual void write(const rclcpp::Time& time, const rclcpp::Duration& period) {}
 };
 
 typedef std::shared_ptr<RobotHW> RobotHWSharedPtr;
